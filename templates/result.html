@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Result</title>
+    <style>
+        :root {
+            --ink: #18212f;
+            --muted: #657084;
+            --line: #d9e0ea;
+            --panel: #ffffff;
+            --bg: #f5f7fb;
+            --teal: #087f83;
+            --green: #138a57;
+            --amber: #b7791f;
+            --rose: #b42318;
+            --blue: #2457a7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--bg);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            letter-spacing: 0;
+        }
+
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner,
+        .page {
+            width: min(1180px, calc(100% - 36px));
+            margin: 0 auto;
+        }
+
+        .topbar-inner {
+            min-height: 68px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand {
+            font-weight: 900;
+        }
+
+        .new-analysis {
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .page {
+            padding: 34px 0 50px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 24px;
+        }
+
+        .score-panel,
+        .panel,
+        .suggestion,
+        .breakdown-row {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .score-panel {
+            padding: 26px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+        }
+
+        .score-ring {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background:
+                conic-gradient(var(--teal) var(--score), #e6ecf3 0),
+                #e6ecf3;
+            display: grid;
+            place-items: center;
+            margin-bottom: 18px;
+        }
+
+        .score-ring-inner {
+            width: 136px;
+            height: 136px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            box-shadow: inset 0 0 0 1px var(--line);
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .score-number span {
+            font-size: 1.1rem;
+            color: var(--muted);
+        }
+
+        .grade {
+            margin: 0;
+            color: var(--teal);
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .filename {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            overflow-wrap: anywhere;
+        }
+
+        .summary-panel {
+            padding: 28px;
+            background: #102638;
+            border-radius: 8px;
+            color: #ffffff;
+            display: grid;
+            gap: 22px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: clamp(1.85rem, 4vw, 3.2rem);
+            letter-spacing: 0;
+        }
+
+        .summary-panel p {
+            margin-bottom: 0;
+            color: #d5e1e7;
+            line-height: 1.6;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .quick-item {
+            border-top: 1px solid rgba(255, 255, 255, 0.22);
+            padding-top: 13px;
+        }
+
+        .quick-item strong {
+            display: block;
+            font-size: 1.45rem;
+        }
+
+        .quick-item span {
+            color: #bed0d9;
+            font-size: 0.86rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+        }
+
+        .breakdown {
+            display: grid;
+            gap: 12px;
+        }
+
+        .breakdown-row {
+            padding: 16px;
+        }
+
+        .row-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .row-head strong {
+            font-size: 0.98rem;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 999px;
+            background: #e6ecf3;
+            overflow: hidden;
+        }
+
+        .bar span {
+            display: block;
+            height: 100%;
+            width: var(--width);
+            background: var(--teal);
+        }
+
+        .feedback {
+            margin: 10px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.92rem;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            border-radius: 999px;
+            padding: 5px 10px;
+            background: #edf7f7;
+            color: #075b5f;
+            font-size: 0.86rem;
+            font-weight: 750;
+        }
+
+        .tag.missing {
+            background: #fff3df;
+            color: #8a4f12;
+        }
+
+        .empty {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .suggestions {
+            display: grid;
+            gap: 12px;
+        }
+
+        .suggestion {
+            padding: 16px;
+            border-left: 4px solid var(--blue);
+        }
+
+        .suggestion strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .suggestion p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .category {
+            margin-bottom: 18px;
+        }
+
+        .category h3 {
+            margin-bottom: 10px;
+            font-size: 0.98rem;
+        }
+
+        .preview {
+            max-height: 360px;
+            overflow: auto;
+            white-space: pre-wrap;
+            color: #334155;
+            background: #fbfcfe;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 16px;
+            line-height: 1.55;
+            font-size: 0.92rem;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 900px) {
+            .hero,
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .topbar-inner {
+                display: grid;
+                align-content: center;
+                padding: 12px 0;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .row-head {
+                display: grid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">Resume Analyzer</div>
+            <a class="new-analysis" href="/">Analyze another resume</a>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero">
+            <div class="score-panel">
+                <div class="score-ring" style="--score: {{ analysis.score }}%">
+                    <div class="score-ring-inner">
+                        <div class="score-number">{{ analysis.score }}<span>/100</span></div>
+                    </div>
+                </div>
+                <p class="grade">{{ analysis.grade }}</p>
+                <p class="filename">{{ filename }}</p>
+            </div>
+
+            <div class="summary-panel">
+                <div>
+                    <h1>ATS Resume Report</h1>
+                    <p>Score generated from resume structure, contact parsing, keyword alignment, measurable impact, readability, and length.</p>
+                </div>
+                <div class="quick-grid">
+                    <div class="quick-item">
+                        <strong>{{ analysis.word_count }}</strong>
+                        <span>words parsed</span>
+                    </div>
+                    <div class="quick-item">
+                        <strong>{{ analysis.skills|length }}</strong>
+                        <span>skills detected</span>
+                    </div>
+                    <div class="quick-item">
+                        <strong>{{ analysis.sections_found|length }}</strong>
+                        <span>sections found</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <h2>Score Breakdown</h2>
+                <div class="breakdown">
+                    {% for item in analysis.breakdown %}
+                        <div class="breakdown-row">
+                            <div class="row-head">
+                                <strong>{{ item.name }}</strong>
+                                <span>{{ item.score }}/{{ item.max }}</span>
+                            </div>
+                            <div class="bar" aria-hidden="true">
+                                <span style="--width: {{ (item.score / item.max * 100)|round }}%"></span>
+                            </div>
+                            <p class="feedback">{{ item.feedback }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Improvement Suggestions</h2>
+                <div class="suggestions">
+                    {% for suggestion in analysis.suggestions %}
+                        <div class="suggestion">
+                            <strong>{{ suggestion.title }}</strong>
+                            <p>{{ suggestion.detail }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Detected Skills</h2>
+                {% if analysis.skills_by_category %}
+                    {% for category, skills in analysis.skills_by_category.items() %}
+                        <div class="category">
+                            <h3>{{ category }}</h3>
+                            <div class="tags">
+                                {% for skill in skills %}
+                                    <span class="tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty">No known skills were detected. Add a dedicated skills section with role-specific terms.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Job Keyword Match</h2>
+                {% if analysis.matched_keywords or analysis.missing_keywords %}
+                    {% if analysis.matched_keywords %}
+                        <div class="category">
+                            <h3>Matched</h3>
+                            <div class="tags">
+                                {% for keyword in analysis.matched_keywords %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if analysis.missing_keywords %}
+                        <div class="category">
+                            <h3>Missing</h3>
+                            <div class="tags">
+                                {% for keyword in analysis.missing_keywords %}
+                                    <span class="tag missing">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="empty">Paste a target job description on the upload screen to compare role-specific keywords.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Resume Sections</h2>
+                <div class="category">
+                    <h3>Found</h3>
+                    <div class="tags">
+                        {% for section in analysis.sections_found %}
+                            <span class="tag">{{ section }}</span>
+                        {% else %}
+                            <span class="tag missing">None detected</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="category">
+                    <h3>Missing</h3>
+                    <div class="tags">
+                        {% for section in analysis.sections_missing %}
+                            <span class="tag missing">{{ section }}</span>
+                        {% else %}
+                            <span class="tag">No major gaps</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Contact Parsing</h2>
+                <div class="tags">
+                    <span class="tag {% if not analysis.contact.email %}missing{% endif %}">Email</span>
+                    <span class="tag {% if not analysis.contact.phone %}missing{% endif %}">Phone</span>
+                    <span class="tag {% if not analysis.contact.linkedin %}missing{% endif %}">LinkedIn</span>
+                    <span class="tag {% if not analysis.contact.portfolio %}missing{% endif %}">Portfolio</span>
+                </div>
+            </div>
+
+            <div class="panel full">
+                <h2>Parsed Text Preview</h2>
+                <div class="preview">{{ analysis.preview }}</div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

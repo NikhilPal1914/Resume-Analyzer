@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Flask
+instance/
+.webassets-cache
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Runtime uploads and generated files
+uploads/*
+!uploads/.gitkeep
+temp_resume.pdf
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and coverage
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
