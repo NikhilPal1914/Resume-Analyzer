@@ -23,6 +23,7 @@ instance/
 uploads/*
 !uploads/.gitkeep
 temp_resume.pdf
+tmp*/
 
 # OS and editor files
 .DS_Store

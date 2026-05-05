@@ -316,6 +316,27 @@
             grid-column: 1 / -1;
         }
 
+        .ai-panel {
+            border-top: 4px solid var(--green);
+        }
+
+        .ai-meta {
+            margin-bottom: 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .ai-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #334155;
+            line-height: 1.55;
+        }
+
+        .ai-list li + li {
+            margin-top: 8px;
+        }
+
         @media (max-width: 900px) {
             .hero,
             .grid {
@@ -412,6 +433,34 @@
                     {% endfor %}
                 </div>
             </div>
+
+            {% if analysis.ai and analysis.ai.enabled %}
+                <div class="panel ai-panel full">
+                    <h2>Local AI Insights</h2>
+                    <p class="ai-meta">{{ analysis.ai.engine }} fit score: {{ analysis.ai.fit_score }}/100 | {{ analysis.ai.career_level }}</p>
+                    <p class="feedback">{{ analysis.ai.summary }}</p>
+                    <div class="grid">
+                        <div>
+                            <h3>Strengths</h3>
+                            <ul class="ai-list">
+                                {% for item in analysis.ai.strengths %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Concerns</h3>
+                            <ul class="ai-list">
+                                {% for item in analysis.ai.concerns %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <h3>Suggested Summary Rewrite</h3>
+                    <p class="feedback">{{ analysis.ai.rewritten_summary }}</p>
+                </div>
+            {% endif %}
 
             <div class="panel">
                 <h2>Detected Skills</h2>
